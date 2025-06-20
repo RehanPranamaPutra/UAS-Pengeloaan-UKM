@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Ukm extends Model
 {
+    protected $table = 'rehan_ukms';
     protected $fillable = ['nama_ukm', 'ketum', 'logo_ukm', 'deskripsi', 'thn_berdiri'];
 }
