@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('nama_kegiatan',50);
             $table->date('tgl_kegiatan');
             $table->enum('status',['Akan Datang','Sedang Berlangsung','Selesai']);
-            $table->string('dokumentasi');
-            $table->text('keterangan');
+            $table->string('dokumentasi')->nullable();
+            $table->text('keterangan')->nullable();
             $table->timestamps();
         });
     }

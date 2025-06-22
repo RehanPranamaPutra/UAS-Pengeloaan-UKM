@@ -13,4 +13,9 @@ class Anggota extends Model
     {
         return $this->belongsTo(Ukm::class);
     }
+
+    public function kegiatan()
+    {
+        return $this->hasMany(Kegiatan::class);
+    }
 }
