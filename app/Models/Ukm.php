@@ -8,4 +8,9 @@ class Ukm extends Model
 {
     protected $table = 'rehan_ukms';
     protected $fillable = ['nama_ukm', 'ketum', 'logo_ukm', 'deskripsi', 'thn_berdiri'];
+
+    public function anggota()
+    {
+        return $this->hasMany(Anggota::class);
+    }
 }

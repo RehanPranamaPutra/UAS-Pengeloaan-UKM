@@ -8,4 +8,9 @@ class Anggota extends Model
 {
     protected $table = 'rehan_anggotas';
     protected $guarded = ['id'];
+
+    public function ukm()
+    {
+        return $this->belongsTo(Ukm::class);
+    }
 }

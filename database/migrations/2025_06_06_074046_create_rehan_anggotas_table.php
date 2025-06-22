@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ukm_id')->constrained('rehan_ukms','id');
             $table->string('nama',50);
-            $table->integer('nim');
+            $table->string('nim');
             $table->string('email')->unique();
             $table->timestamps();
         });
