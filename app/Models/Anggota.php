@@ -18,4 +18,9 @@ class Anggota extends Model
     {
         return $this->hasMany(Kegiatan::class);
     }
+
+    public function capaian()
+    {
+        return $this->hasMany(Capaian::class);
+    }
 }

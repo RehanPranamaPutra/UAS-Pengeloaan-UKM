@@ -13,11 +13,15 @@ return new class extends Migration
     {
         Schema::create('rehan_ukms', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_ukm',50);
-            $table->string('ketum',25);
-            $table->string('logo_ukm');
-            $table->text('deskripsi');
-            $table->date('thn_berdiri');
+            $table->string('nama_ukm', 50)->unique();
+            $table->string('slug')->unique();
+            $table->string('ketum', 50)->nullable();
+            $table->string('logo_ukm', 255)->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->string('email')->nullable();
+            $table->string('telepon', 20)->nullable();
+            $table->string('website')->nullable();
+            $table->date('thn_berdiri')->nullable();
             $table->timestamps();
         });
     }

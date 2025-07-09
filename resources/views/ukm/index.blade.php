@@ -1,56 +1,57 @@
 @extends('layout.main')
 @section('title', 'Data UKM')
-@section('navUkm', 'bg-gray-900 text-white')
+@section('navUkm', 'active') {{-- Optional: ubah jika ingin tanda aktif --}}
 
 @section('content')
-<h1 class="text-3xl font-bold mb-6 text-center">Daftar UKM</h1>
-<a href="{{ route('ukm.create') }}" class="inline-block mb-6 px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition">
+<h1 class="text-center fw-bold fs-3 mb-4">Daftar UKM</h1>
+
+<a href="{{ route('ukm.create') }}" class="btn btn-primary mb-3">
     + Tambah Data UKM
 </a>
-<div class="overflow-x-auto">
-    <table class="min-w-full bg-white shadow rounded-lg overflow-hidden">
-        <thead class="bg-blue-100">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Nama UKM</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Ketua Umum</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Tahun Berdiri</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Deskripsi</th>
-                <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Logo</th>
-                <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase">Aksi</th>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle bg-white shadow-sm rounded">
+        <thead class="table-primary">
+            <tr class="text-nowrap text-center">
+                <th>Nama UKM</th>
+                <th>Ketua Umum</th>
+                <th>Tahun Berdiri</th>
+                <th>Deskripsi</th>
+                <th>Logo</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             @forelse ($ukms as $ukm)
-            <tr class="border-b hover:bg-blue-50 transition">
-                <td class="px-6 py-4">{{ $ukm->nama_ukm }}</td>
-                <td class="px-6 py-4">{{ $ukm->ketum }}</td>
-                <td class="px-6 py-4">{{ $ukm->thn_berdiri }}</td>
-                <td class="px-6 py-4 max-w-xs truncate" title="{{ $ukm->deskripsi }}">{{ Str::limit($ukm->deskripsi, 50) }}</td>
-                <td class="px-6 py-4">
-                    @if($ukm->logo_ukm)
-                        <img src="{{ asset('storage/' . $ukm->logo_ukm) }}"
-                            alt="Logo {{ $ukm->nama_ukm }}"
-                            class="h-12 w-12 object-contain rounded shadow">
-                    @else
-                        <span class="text-gray-400 italic">Tidak ada logo</span>
-                    @endif
-                </td>
-                <td class="px-6 py-4 text-center">
-                    <a href="{{ route('ukm.edit',$ukm->id) }}" class="text-blue-600 hover:underline">Edit</a>
-                    <span class="mx-2 text-gray-400">|</span>
-                    <form action="{{ route('ukm.delete', $ukm->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:underline bg-transparent border-none p-0 m-0 cursor-pointer">
-                            Hapus
-                        </button>
-                    </form>
-                </td>
-            </tr>
+                <tr>
+                    <td>{{ $ukm->nama_ukm }}</td>
+                    <td>{{ $ukm->ketum }}</td>
+                    <td>{{ $ukm->thn_berdiri }}</td>
+                    <td class="text-truncate" style="max-width: 250px;" title="{{ $ukm->deskripsi }}">
+                        {{ Str::limit($ukm->deskripsi, 50) }}
+                    </td>
+                    <td class="text-center">
+                        @if($ukm->logo_ukm)
+                            <img src="{{ asset('storage/' . $ukm->logo_ukm) }}"
+                                alt="Logo {{ $ukm->nama_ukm }}"
+                                class="img-thumbnail" style="height: 48px; width: 48px; object-fit: contain;">
+                        @else
+                            <span class="text-muted fst-italic">Tidak ada logo</span>
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ route('ukm.edit', $ukm->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form action="{{ route('ukm.delete', $ukm->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
             @empty
-            <tr>
-                <td colspan="6" class="px-6 py-4 text-center text-gray-500">Belum ada data UKM.</td>
-            </tr>
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Belum ada data UKM.</td>
+                </tr>
             @endforelse
         </tbody>
     </table>

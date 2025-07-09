@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('ukm_id')->constrained('rehan_ukms','id');
             $table->foreignId('anggota_id')->constrained('rehan_anggotas','id');
             $table->string('judul_prestasi',50);
-            $table->text('deskripsi_prestasi');
+            $table->text('deskripsi_prestasi')->nullable();
             $table->date('tanggal');
             $table->enum('tingkat',['Kampus','Regional','Nasional','Internasional']);
-            $table->string('dokumntasi_capaian');
+            $table->string('dokumentasi_capaian')->nullable();
             $table->timestamps();
         });
     }

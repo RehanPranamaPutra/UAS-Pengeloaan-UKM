@@ -47,8 +47,9 @@ class AnggotaController extends Controller
             'email' => 'required|unique:rehan_anggotas'
         ]);
 
-        Anggota::create($validate);
-        return redirect()->route('ukm.index');
+        $anggota = Anggota::create($validate);
+
+        return redirect()->route('anggota.index', ['ukm_id' => $anggota->ukm_id]);
     }
 
     /**
@@ -67,7 +68,7 @@ class AnggotaController extends Controller
 
         $ukms = Ukm::all();
         $select_ukm_id = $request->ukm_id;
-        return view('anggota.edit', compact('ukms','select_ukm_id','anggota'));
+        return view('anggota.edit', compact('ukms', 'select_ukm_id', 'anggota'));
     }
 
     /**
@@ -90,7 +91,6 @@ class AnggotaController extends Controller
     public function delete(Anggota $anggota)
     {
         $anggota->delete();
-
-        return redirect()->route('anggota.index',['ukm_id' => $anggota->ukm_id]);
+        return redirect()->route('anggota.index', ['ukm_id' => $anggota->ukm_id]);
     }
 }

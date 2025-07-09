@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Ukm;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,25 +26,33 @@ class UkmController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama_ukm' => 'required',
-            'ketum' => 'required',
-            'logo_ukm' => 'required|image|mimes:jpeg,webp,jpg',
-            'deskripsi' => 'required',
-            'thn_berdiri' => 'required'
+            'nama_ukm' => 'required|unique:rehan_ukms,nama_ukm',
+            'ketum' => 'nullable',
+            'logo_ukm' => 'nullable|image|mimes:jpeg,webp,jpg,png',
+            'deskripsi' => 'nullable',
+            'email' => 'nullable|unique:rehan_ukms,email',
+            'telepon' => 'nullable|unique:rehan_ukms,telepon',
+            'website' => 'nullable',
+            'thn_berdiri' => 'nullable'
         ]);
 
+        $slug = Str::slug($request->nama_ukm);
+        $logo= null;
+
         if ($request->hasFile('logo_ukm')) {
-            $logoPath = $request->file('logo_ukm')->store('logo_ukm', 'public');
-            $validated['logo_ukm'] = $logoPath; // simpan path relatif ke database
+            $logo = $request->file('logo_ukm')->store('logo_ukm', 'public');
         }
 
         Ukm::create([
             'nama_ukm' => $validated['nama_ukm'],
+            'slug'  => $slug,
             'ketum' => $validated['ketum'],
-            'logo_ukm' => $validated['logo_ukm'],
+            'email' => $validated['email'],
+            'telepon' => $validated['telepon'],
+            'website' => $validated['website'],
+            'logo_ukm' => $logo,
             'deskripsi' => $validated['deskripsi'],
             'thn_berdiri' => $validated['thn_berdiri']
-
         ]);
 
         return redirect()->route('ukm.index');
@@ -60,6 +69,7 @@ class UkmController extends Controller
         $ukm->ketum = $request->ketum;
         $ukm->thn_berdiri = $request->thn_berdiri;
         $ukm->deskripsi = $request->deskripsi;
+        $slug = Str::slug($request->nama_ukm);
 
         if ($request->hasFile('logo_ukm')) {
             $logoPath = $request->file('logo_ukm')->store('logo_ukm', 'public');
@@ -73,7 +83,7 @@ class UkmController extends Controller
 
     function delete(Ukm $ukm)
     {
-         if ($ukm->logo_ukm && Storage::disk('public')->exists($ukm->logo_ukm)) {
+        if ($ukm->logo_ukm && Storage::disk('public')->exists($ukm->logo_ukm)) {
             Storage::disk('public')->delete($ukm->logo_ukm);
         }
         $ukm->delete();

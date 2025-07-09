@@ -36,5 +36,15 @@ Route::prefix('admin')->group(function () {
     Route::put('/kegiatan/{kegiatan}', [KegiatanController::class, 'update'])->name('kegiatan.update');
     Route::delete('/kegiatan/{kegiatan}', [KegiatanController::class, 'delete'])->name('kegiatan.delete');
 
-    Route::resource('/capaian', CapaianController::class);
+     //Route Capaian
+    Route::get('/capaian', [CapaianController::class, 'index'])->name('capaian.index');
+    Route::get('/capaian/create', [CapaianController::class, 'create'])->name('capaian.create');
+    // Untuk AJAX ambil anggota berdasarkan UKM
+    Route::get('/get-anggota-by-ukm/{id}', function ($id) {
+        return Anggota::where('ukm_id', $id)->get();
+    });
+    Route::post('/capaian', [CapaianController::class, 'store'])->name('capaian.store');
+    Route::get('/capaian/edit/{capaian}', [CapaianController::class, 'edit'])->name('capaian.edit');
+    Route::put('/capaian/{capaian}', [CapaianController::class, 'update'])->name('capaian.update');
+    Route::delete('/capaian/{capaian}', [CapaianController::class, 'delete'])->name('capaian.delete');;
 });

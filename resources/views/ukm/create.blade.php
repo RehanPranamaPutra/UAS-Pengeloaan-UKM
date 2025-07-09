@@ -1,59 +1,95 @@
 @extends('layout.main')
 @section('title', 'Input UKM')
-@section('navUkm', 'bg-gray-900 text-white')
+@section('navUkm', 'active') {{-- Sesuaikan dengan kelas aktif di Bootstrap jika perlu --}}
 @section('content')
-<h1 class="text-2xl font-bold mb-4">Input Data UKM</h1>
+<h1 class="h4 fw-bold mb-4">Input Data UKM</h1>
 
-<form action="{{ route('ukm.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+<form action="{{ route('ukm.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <div>
-        <label for="nama_ukm" class="block font-semibold">Nama UKM</label>
+
+    <div class="mb-3">
+        <label for="nama_ukm" class="form-label fw-semibold">Nama UKM</label>
         <input type="text" name="nama_ukm" id="nama_ukm"
-            class="border rounded px-3 py-2 w-full @error('nama_ukm') border-red-500 @enderror"
+            class="form-control @error('nama_ukm') is-invalid @enderror"
             value="{{ old('nama_ukm') }}">
         @error('nama_ukm')
-            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div>
-        <label for="ketum" class="block font-semibold">Ketua Umum</label>
+
+    <div class="mb-3">
+        <label for="ketum" class="form-label fw-semibold">Ketua Umum</label>
         <input type="text" name="ketum" id="ketum"
-            class="border rounded px-3 py-2 w-full @error('ketum') border-red-500 @enderror"
-            value="{{ old('ketum') }}" >
+            class="form-control @error('ketum') is-invalid @enderror"
+            value="{{ old('ketum') }}">
         @error('ketum')
-            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div>
-        <label for="thn_berdiri" class="block font-semibold">Tahun Berdiri</label>
+
+    <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email</label>
+        <input type="email" name="email" id="email"
+            class="form-control @error('email') is-invalid @enderror"
+            value="{{ old('email') }}">
+        @error('email')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label for="thn_berdiri" class="form-label fw-semibold">Tahun Berdiri</label>
         <input type="date" name="thn_berdiri" id="thn_berdiri"
-            class="border rounded px-3 py-2 w-full @error('thn_berdiri') border-red-500 @enderror"
-            value="{{ old('thn_berdiri') }}" >
+            class="form-control @error('thn_berdiri') is-invalid @enderror"
+            value="{{ old('thn_berdiri') }}">
         @error('thn_berdiri')
-            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div>
-        <label for="deskripsi" class="block font-semibold">Deskripsi</label>
+
+    <div class="mb-3">
+        <label for="telepon" class="form-label fw-semibold">Telepon</label>
+        <input type="text" name="telepon" id="telepon"
+            class="form-control @error('telepon') is-invalid @enderror"
+            value="{{ old('telepon') }}">
+        @error('telepon')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label for="website" class="form-label fw-semibold">Website</label>
+        <input type="text" name="website" id="website"
+            class="form-control @error('website') is-invalid @enderror"
+            value="{{ old('website') }}">
+        @error('website')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label for="deskripsi" class="form-label fw-semibold">Deskripsi</label>
         <textarea name="deskripsi" id="deskripsi"
-            class="border rounded px-3 py-2 w-full @error('deskripsi') border-red-500 @enderror"
-            rows="4" >{{ old('deskripsi') }}</textarea>
+            class="form-control @error('deskripsi') is-invalid @enderror"
+            rows="4">{{ old('deskripsi') }}</textarea>
         @error('deskripsi')
-            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div>
-        <label for="logo_ukm" class="block font-semibold">Logo UKM</label>
+
+    <div class="mb-3">
+        <label for="logo_ukm" class="form-label fw-semibold">Logo UKM</label>
         <input type="file" name="logo_ukm" id="logo_ukm"
-            class="border rounded px-3 py-2 w-full @error('logo_ukm') border-red-500 @enderror"
-            accept="image/*" >
+            class="form-control @error('logo_ukm') is-invalid @enderror"
+            accept="image/*">
         @error('logo_ukm')
-            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+            <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div>
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan</button>
-        <a href="{{ route('ukm.index') }}" class="ml-2 text-gray-600 hover:underline">Batal</a>
+
+    <div class="mt-4">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="{{ route('ukm.index') }}" class="btn btn-secondary ms-2">Batal</a>
     </div>
 </form>
 @endsection
