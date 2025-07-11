@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Ukm;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,9 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        view()->composer('*', function($view){
+        view()->composer('layout.main', function ($view) {
             $view->with('sidebar_ukms', Ukm::all());
         });
-    }
 
+        Gate::define('access',function($user,$ukm_id){
+            if($user->role === 'admin'){
+                return true;
+            }
+            return $user->ukm_id === $ukm_id;
+        });
+    }
 }

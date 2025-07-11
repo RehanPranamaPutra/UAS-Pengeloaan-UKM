@@ -78,36 +78,45 @@
       </div>
 
       <nav class="nav flex-column flex-grow-1 p-2">
-        <a href="{{ route('ukm.index') }}" class="nav-link @yield('navUkm')">
-          <i class="fas fa-building me-2"></i> UKM
+    <a href="{{ route('ukm.index') }}" class="nav-link @yield('navUkm')">
+      <i class="fas fa-building me-2"></i> UKM
+    </a>
+
+    @php $menus = ['anggota'=>'users','kegiatan'=>'calendar-alt','capaian'=>'trophy']; @endphp
+
+    @foreach($menus as $key => $icon)
+      <div class="dropdown-parent mb-1">
+        <a href="javascript:void(0)"
+           class="nav-link d-flex justify-content-between align-items-center @yield('nav'.ucfirst($key).'Parent')"
+           onclick="toggleMenu('{{ $key }}')">
+          <span><i class="fas fa-{{ $icon }} me-2"></i> {{ ucfirst($key) }}</span>
+          <i id="arrow-{{ $key }}" class="fas fa-chevron-right @yield('nav'.ucfirst($key).'Parent') rotate-90"></i>
         </a>
 
-        @php $menus = ['anggota'=>'users','kegiatan'=>'calendar-alt','capaian'=>'trophy']; @endphp
-        @foreach($menus as $key => $icon)
-          <div class="dropdown-parent mb-1">
-            <a href="javascript:void(0)"
-               class="nav-link d-flex justify-content-between align-items-center @yield('nav'.ucfirst($key).'Parent')"
-               onclick="toggleMenu('{{ $key }}')">
-              <span><i class="fas fa-{{ $icon }} me-2"></i> {{ ucfirst($key) }}</span>
-              <i id="arrow-{{ $key }}" class="fas fa-chevron-right @yield('nav'.ucfirst($key).'Parent') rotate-90"></i>
-            </a>
+        <div id="menu-{{ $key }}"
+             class="submenu collapse @yield('nav'.ucfirst($key).'Parent')">
+          @foreach($sidebar_ukms as $ukm)
+            @can('access', $ukm->id)
+              <a href="{{ route($key.'.index',['ukm_id'=>$ukm->id]) }}"
+                 class="nav-link @if(request('ukm_id') == $ukm->id) active @endif">
+                • {{ $ukm->nama_ukm }}
+              </a>
+            @endcan
+          @endforeach
+        </div>
+      </div>
+    @endforeach
+</nav>
 
-            <div id="menu-{{ $key }}"
-                 class="submenu collapse @yield('nav'.ucfirst($key).'Parent')">
-              @foreach($sidebar_ukms as $ukm)
-                <a href="{{ route($key.'.index',['ukm_id'=>$ukm->id]) }}"
-                   class="nav-link @if(request('ukm_id') == $ukm->id) active @endif">
-                  • {{ $ukm->nama_ukm }}
-                </a>
-              @endforeach
-            </div>
-          </div>
-        @endforeach
-      </nav>
 
       <div class="p-3 border-top text-center" style="border-color:#E0E0E0;">
-        <small>Signed in as <strong>Username</strong></small><br>
-        <a href="#" class="text-decoration-none" style="color:#A39171;">Sign out</a>
+        <small>Signed in as <strong>{{ Auth::user()->name }}</strong></small><br>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
+        <a href="#" class="text-decoration-none" style="color:#A39171;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            Sign out
+        </a>
       </div>
     </aside>
 

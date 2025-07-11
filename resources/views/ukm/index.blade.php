@@ -4,7 +4,6 @@
 
 @section('content')
 <h1 class="text-center fw-bold fs-3 mb-4">Daftar UKM</h1>
-
 <a href="{{ route('ukm.create') }}" class="btn btn-primary mb-3">
     + Tambah Data UKM
 </a>
@@ -23,6 +22,7 @@
         </thead>
         <tbody>
             @forelse ($ukms as $ukm)
+            @can('access',$ukm->id)
                 <tr>
                     <td>{{ $ukm->nama_ukm }}</td>
                     <td>{{ $ukm->ketum }}</td>
@@ -48,6 +48,7 @@
                         </form>
                     </td>
                 </tr>
+                 @endcan
             @empty
                 <tr>
                     <td colspan="6" class="text-center text-muted">Belum ada data UKM.</td>

@@ -1,13 +1,19 @@
 <?php
 
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CapaianController;
 use App\Http\Controllers\KegiatanController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\UkmController;
 use App\Models\Anggota;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->group(function () {
+Route::get('/',[LandingController::class,'index'])->name('landing.index');
+Route::get('/ukm/{slug}',[LandingController::class,'show'])->name('landing.ukm.detail');
+
+//route admin
+Route::prefix('admin')->middleware('auth')->group(function () {
     // Route UKM
     Route::get('/ukm', [UkmController::class, 'index'])->name('ukm.index');
     Route::get('/ukm/create', [UkmController::class, 'create'])->name('ukm.create');
@@ -28,9 +34,9 @@ Route::prefix('admin')->group(function () {
     Route::get('/kegiatan', [KegiatanController::class, 'index'])->name('kegiatan.index');
     Route::get('/kegiatan/create', [KegiatanController::class, 'create'])->name('kegiatan.create');
     // Untuk AJAX ambil anggota berdasarkan UKM
-    Route::get('/get-anggota-by-ukm/{id}', function ($id) {
-        return Anggota::where('ukm_id', $id)->get();
-    });
+    // Route::get('/get-anggota-by-ukm/{id}', function ($id) {
+    //     return Anggota::where('ukm_id', $id)->get();
+    // });
     Route::post('/kegiatan', [KegiatanController::class,'store'], )->name('kegiatan.store');
     Route::get('/kegiatan/edit/{kegiatan}', [KegiatanController::class, 'edit'])->name('kegiatan.edit');
     Route::put('/kegiatan/{kegiatan}', [KegiatanController::class, 'update'])->name('kegiatan.update');
@@ -40,11 +46,17 @@ Route::prefix('admin')->group(function () {
     Route::get('/capaian', [CapaianController::class, 'index'])->name('capaian.index');
     Route::get('/capaian/create', [CapaianController::class, 'create'])->name('capaian.create');
     // Untuk AJAX ambil anggota berdasarkan UKM
-    Route::get('/get-anggota-by-ukm/{id}', function ($id) {
-        return Anggota::where('ukm_id', $id)->get();
-    });
+    // Route::get('/get-anggota-by-ukm/{id}', function ($id) {
+    //     return Anggota::where('ukm_id', $id)->get();
+    // });
     Route::post('/capaian', [CapaianController::class, 'store'])->name('capaian.store');
     Route::get('/capaian/edit/{capaian}', [CapaianController::class, 'edit'])->name('capaian.edit');
     Route::put('/capaian/{capaian}', [CapaianController::class, 'update'])->name('capaian.update');
     Route::delete('/capaian/{capaian}', [CapaianController::class, 'delete'])->name('capaian.delete');;
 });
+
+Route::get('/login',[AuthController::class,'loginForm'])->name('login');
+Route::post('/login',[AuthController::class,'login'])->name('login.submit');
+Route::post('/logout',[AuthController::class,'logout'])->name('logout');
+
+
