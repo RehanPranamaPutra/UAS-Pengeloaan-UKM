@@ -1,6 +1,5 @@
 @extends('layout.main')
 @section('title', 'Tambah Kegiatan')
-
 @section('content')
 
 <h1 class="h4 fw-bold mb-4">Tambah Kegiatan UKM</h1>

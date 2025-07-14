@@ -23,4 +23,9 @@ class Ukm extends Model
     {
         return $this->hasMany(Capaian::class);
     }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

@@ -4,9 +4,12 @@
 
 @section('content')
 <h1 class="text-center fw-bold fs-3 mb-4">Daftar UKM</h1>
+@can('create-ukm')
+
 <a href="{{ route('ukm.create') }}" class="btn btn-primary mb-3">
     + Tambah Data UKM
 </a>
+@endcan
 
 <div class="table-responsive">
     <table class="table table-bordered table-hover align-middle bg-white shadow-sm rounded">
@@ -41,11 +44,14 @@
                     </td>
                     <td class="text-center">
                         <a href="{{ route('ukm.edit', $ukm->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        @can('create-ukm')
+
                         <form action="{{ route('ukm.delete', $ukm->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
                         </form>
+                        @endcan
                     </td>
                 </tr>
                  @endcan

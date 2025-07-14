@@ -9,21 +9,29 @@
   <!-- Bootstrap & FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    /* Smooth scroll */
-    html { scroll-behavior: smooth; }
-
-    body {
-      padding-top: 70px;
+    html, body {
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
       background: #f5f9ff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      padding-top: 50px; /* untuk offset navbar fixed-top */
     }
 
     /* Navbar */
     .navbar { background: #0077b6; }
     .navbar-brand, .nav-link { color: #fff !important; }
-    .nav-link:hover { color: #ffd60a !important; }
+    .nav-link:hover { color: #1f1e1b !important; }
 
     /* Footer */
     footer {
@@ -31,9 +39,6 @@
       color: #fff;
       padding: .75rem 0;
       text-align: center;
-      position: relative;
-      bottom: 0;
-      width: 100%;
     }
   </style>
 
@@ -59,7 +64,9 @@
     </div>
   </nav>
 
-  <main>@yield('content')</main>
+  <main>
+    @yield('content')
+  </main>
 
   <footer>
     &copy; {{ date('Y') }} &mdash; Portal UKM

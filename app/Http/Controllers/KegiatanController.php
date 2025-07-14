@@ -7,6 +7,7 @@ use App\Models\Ukm;
 use App\Models\Anggota;
 use App\Models\Kegiatan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class KegiatanController extends Controller
@@ -16,18 +17,21 @@ class KegiatanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Kegiatan::with(['ukm', 'anggota']);
-
-        $ukm = null;
         if ($request->filled('ukm_id')) {
-            $query->where('ukm_id', $request->ukm_id);
-            $ukm = Ukm::find($request->ukm_id);
+            $ukm = Ukm::findOrFail($request->ukm_id);
+
+            if (Gate::allows('crud', $ukm)) {
+                $query = Kegiatan::with(['ukm', 'anggota'])
+                    ->where('ukm_id', $ukm->id);
+
+                $kegiatan = $query->orderBy('tgl_kegiatan', 'desc')->paginate(10);
+                $list_ukm = Ukm::all();
+
+                return view('kegiatan.index', compact('kegiatan', 'list_ukm', 'ukm'));
+            }
+
+            abort(403, "Anda Tidak Memiliki Akses");
         }
-
-        $kegiatan = $query->orderBy('tgl_kegiatan', 'desc')->paginate(10);
-        $list_ukm = Ukm::all();
-
-        return view('kegiatan.index', compact('kegiatan', 'list_ukm', 'ukm'));
     }
 
     /**
@@ -35,18 +39,25 @@ class KegiatanController extends Controller
      */
     public function create(Request $request)
     {
-        $select_ukm_id = $request->ukm_id;
-        $ukms = Ukm::all();
-        $anggotas = collect();
+        if ($request->filled('ukm_id')) {
+            $ukm = Ukm::findOrFail($request->ukm_id);
 
-        if ($select_ukm_id) {
-            $ukm = Ukm::with('anggota')->find($select_ukm_id);
-            if ($ukm) {
-                $anggotas = $ukm->anggota;
+            if (Gate::allows('crud', $ukm)) {
+
+                $select_ukm_id = $request->ukm_id;
+                $ukms = Ukm::all();
+                $anggotas = collect();
+
+                if ($select_ukm_id) {
+                    $ukm = Ukm::with('anggota')->find($select_ukm_id);
+                    if ($ukm) {
+                        $anggotas = $ukm->anggota;
+                    }
+                }
+                return view('kegiatan.create', compact('ukms', 'anggotas', 'select_ukm_id'));
             }
+            abort(403, "Anda Tidak Memiliki Akses");
         }
-
-        return view('kegiatan.create', compact('ukms', 'anggotas', 'select_ukm_id'));
     }
     /**
      * Store a newly created resource in storage.
@@ -107,8 +118,12 @@ class KegiatanController extends Controller
      */
     public function edit(Kegiatan $kegiatan, Request $request)
     {
-        $ukms = Ukm::all(); // untuk dropdown (walaupun nanti di-disable)
+        $ukm = Ukm::findOrFail($kegiatan->ukm_id);
 
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses');
+        }
+        $ukms = Ukm::all(); // untuk dropdown (walaupun nanti di-disable)
         // Ambil UKM terpilih dari kegiatan atau dari query parameter
         $select_ukm_id = $request->ukm_id ?? $kegiatan->ukm_id;
 
@@ -169,10 +184,18 @@ class KegiatanController extends Controller
      */
     public function delete(Kegiatan $kegiatan)
     {
+
+        // Ambil data UKM yang terkait dengan kegiatan
+        $ukm = Ukm::findOrFail($kegiatan->ukm_id);
+        // Cek izin akses berdasarkan Gate
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus data ini.');
+        }
+
         if ($kegiatan->dokumentasi && Storage::disk('public')->exists($kegiatan->dokumentasi)) {
             Storage::disk('public')->delete($kegiatan->dokumentasi);
         }
         $kegiatan->delete();
-        return redirect()->route('kegiatan.index')->with('success', 'Data Berhasi Dihapus');
+        return redirect()->route('kegiatan.index',['ukm_id' => $kegiatan->ukm_id])->with('success', 'Data Berhasi Dihapus');
     }
 }

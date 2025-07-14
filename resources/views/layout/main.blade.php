@@ -92,7 +92,6 @@
           <span><i class="fas fa-{{ $icon }} me-2"></i> {{ ucfirst($key) }}</span>
           <i id="arrow-{{ $key }}" class="fas fa-chevron-right @yield('nav'.ucfirst($key).'Parent') rotate-90"></i>
         </a>
-
         <div id="menu-{{ $key }}"
              class="submenu collapse @yield('nav'.ucfirst($key).'Parent')">
           @foreach($sidebar_ukms as $ukm)
@@ -106,6 +105,9 @@
         </div>
       </div>
     @endforeach
+    <a href="{{ route('user.index') }}" class="nav-link @yield('navUser')">
+        <i class="fas fa-user-cog me-2"></i> User
+    </a>
 </nav>
 
 
@@ -135,6 +137,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  @stack('scripts')
   <script>
     function toggleMenu(key) {
       const menu = document.getElementById('menu-' + key);

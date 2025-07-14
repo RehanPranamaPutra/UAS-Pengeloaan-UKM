@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Ukm;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class UkmController extends Controller
@@ -20,7 +21,10 @@ class UkmController extends Controller
 
     public function create()
     {
-        return view('ukm.create');
+        if (Gate::allows('create-ukm')) {
+            return view('ukm.create');
+        }
+        abort(403);
     }
 
     public function store(Request $request)
@@ -37,7 +41,7 @@ class UkmController extends Controller
         ]);
 
         $slug = Str::slug($request->nama_ukm);
-        $logo= null;
+        $logo = null;
 
         if ($request->hasFile('logo_ukm')) {
             $logo = $request->file('logo_ukm')->store('logo_ukm', 'public');
@@ -60,6 +64,9 @@ class UkmController extends Controller
 
     function edit(Ukm $ukm)
     {
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses');
+        }
         return view('ukm.edit', compact('ukm'));
     }
 

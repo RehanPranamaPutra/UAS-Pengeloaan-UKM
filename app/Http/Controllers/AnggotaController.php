@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Anggota;
 use App\Models\Ukm;
+use App\Models\Anggota;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AnggotaController extends Controller
 {
@@ -13,16 +14,24 @@ class AnggotaController extends Controller
      */
     public function index(Request $request)
     {
-        $ukm = null;
-        $anggotas = collect(); // kosongkan default
+        if ($request->filled('ukm_id')) {
+            $ukm = Ukm::findOrFail($request->ukm_id);
 
-        if ($request->has('ukm_id')) {
-            $ukm = Ukm::find($request->ukm_id);
-            if ($ukm) {
-                $anggotas = $ukm->anggota; // hanya ambil anggota jika ada UKM
+            if (Gate::allows('crud', $ukm)) {
+
+                $ukm = null;
+                $anggotas = collect(); // kosongkan default
+
+                if ($request->has('ukm_id')) {
+                    $ukm = Ukm::find($request->ukm_id);
+                    if ($ukm) {
+                        $anggotas = $ukm->anggota; // hanya ambil anggota jika ada UKM
+                    }
+                }
+                return view('anggota.index', compact('ukm', 'anggotas'));
             }
+            abort(403);
         }
-        return view('anggota.index', compact('ukm', 'anggotas'));
     }
 
     /**
@@ -30,9 +39,18 @@ class AnggotaController extends Controller
      */
     public function create(Request $request)
     {
-        $ukms = Ukm::all();
-        $select_ukm_id = $request->ukm_id;
-        return view('anggota.create', compact('ukms', 'select_ukm_id'));
+        if ($request->filled('ukm_id')) {
+            $ukm = Ukm::findOrFail($request->ukm_id);
+
+            if (Gate::allows('crud', $ukm)) {
+
+                $ukms = Ukm::all();
+                $select_ukm_id = $request->ukm_id;
+                return view('anggota.create', compact('ukms', 'select_ukm_id'));
+            }
+
+            abort(403);
+        }
     }
 
     /**
@@ -65,6 +83,13 @@ class AnggotaController extends Controller
      */
     public function edit(Anggota $anggota, Request $request)
     {
+        // Ambil UKM yang dimiliki anggota
+        $ukm = Ukm::findOrFail($anggota->ukm_id);
+
+        // Cek akses berdasarkan policy atau gate
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses ke UKM ini');
+        }
 
         $ukms = Ukm::all();
         $select_ukm_id = $request->ukm_id;

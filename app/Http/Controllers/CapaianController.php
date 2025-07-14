@@ -6,6 +6,7 @@ use App\Models\Ukm;
 use App\Models\Anggota;
 use App\Models\Capaian;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class CapaianController extends Controller
@@ -15,20 +16,28 @@ class CapaianController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Capaian::with(['ukm', 'anggota']);
-        $ukm = null;
-
-        // Filter berdasarkan ukm_id jika ada
         if ($request->filled('ukm_id')) {
-            $query->where('ukm_id', $request->ukm_id);
-            $ukm = Ukm::find($request->ukm_id);
+            $ukm = Ukm::findOrFail($request->ukm_id);
+
+            if (Gate::allows('crud', $ukm)) {
+
+                $query = Capaian::with(['ukm', 'anggota']);
+                $ukm = null;
+
+                // Filter berdasarkan ukm_id jika ada
+                if ($request->filled('ukm_id')) {
+                    $query->where('ukm_id', $request->ukm_id);
+                    $ukm = Ukm::find($request->ukm_id);
+                }
+
+                $capaian = $query->orderBy('tanggal', 'desc')->paginate(10);
+                $list_ukm = Ukm::all();
+                $selected_ukm_id = $request->ukm_id; // Untuk keperluan tampilan select
+
+                return view('capaian.index', compact('capaian', 'list_ukm', 'ukm', 'selected_ukm_id'));
+            }
+            abort(403);
         }
-
-        $capaian = $query->orderBy('tanggal', 'desc')->paginate(10);
-        $list_ukm = Ukm::all();
-        $selected_ukm_id = $request->ukm_id; // Untuk keperluan tampilan select
-
-        return view('capaian.index', compact('capaian', 'list_ukm', 'ukm', 'selected_ukm_id'));
     }
 
     /**
@@ -36,18 +45,25 @@ class CapaianController extends Controller
      */
     public function create(request $request)
     {
-        $ukms = Ukm::all();
-        $ukm = null;
-        $anggotas = collect();
+        if ($request->filled('ukm_id')) {
+            $ukm = Ukm::findOrFail($request->ukm_id);
 
-        if ($request->has('ukm_id')) {
-            $ukm = Ukm::find($request->ukm_id);
-            if ($ukm) {
-                $anggotas = $ukm->anggota;
+            if (Gate::allows('crud', $ukm)) {
+                $ukms = Ukm::all();
+                $ukm = null;
+                $anggotas = collect();
+
+                if ($request->has('ukm_id')) {
+                    $ukm = Ukm::find($request->ukm_id);
+                    if ($ukm) {
+                        $anggotas = $ukm->anggota;
+                    }
+                }
+
+                return view('capaian.create', compact('ukms', 'ukm', 'anggotas'));
             }
+            abort(403);
         }
-
-        return view('capaian.create', compact('ukms', 'ukm', 'anggotas'));
     }
 
     /**
@@ -96,6 +112,12 @@ class CapaianController extends Controller
      */
     public function edit(Capaian $capaian, Request $request)
     {
+
+        $ukm = Ukm::findOrFail($capaian->ukm_id);
+        // Cek akses berdasarkan policy atau gate
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses ke UKM ini');
+        }
         $ukms = Ukm::all();
         $ukm = Ukm::find($capaian->ukm_id);
         $anggotas = $ukm ? $ukm->anggota : collect();
@@ -142,6 +164,19 @@ class CapaianController extends Controller
      */
     public function delete(Capaian $capaian)
     {
-        //
+
+         // Ambil data UKM yang terkait dengan capa$capaian
+        $ukm = Ukm::findOrFail($capaian->ukm_id);
+        // Cek izin akses berdasarkan Gate
+        if (!Gate::allows('crud', $ukm)) {
+            abort(403, 'Anda tidak memiliki akses untuk menghapus data ini.');
+        }
+
+        if ($capaian->dokumentasi && Storage::disk('public')->exists($capaian->dokumentasi)) {
+            Storage::disk('public')->delete($capaian->dokumentasi);
+        }
+        $capaian->delete();
+        return redirect()->route('capaian.index',['ukm_id' => $capaian->ukm_id])->with('success', 'Data Berhasi Dihapus');
+
     }
 }
